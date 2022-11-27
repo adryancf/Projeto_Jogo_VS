@@ -17,6 +17,7 @@ public:
 
 	void renderElementos();
 	bool verificaEntidadesVisiveis();
+	int contaEntidadesMortas();
 
 	Entidade* getJogador();
 	const int getTamanhoLista();

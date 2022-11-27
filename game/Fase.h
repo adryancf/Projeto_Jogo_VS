@@ -4,7 +4,7 @@
 
 #include "Hydra.h"
 #include "Jogador.h"
-#include "Dragao.h"
+#include "Fantasma.h"
 #include "Anjo.h"
 #include "Plataforma.h"
 #include "Caixa.h"
@@ -20,6 +20,8 @@ protected:
 
 	//Entidades
 	Jogador* j1;
+	Jogador* j2;
+
 	Hydra* hydra;
 	Plataforma* plataforma_fase;
 	Caixa* caixa;
@@ -31,20 +33,34 @@ protected:
 	//Colisoes
 	GerenciadorColisoes* pColisoes;
 
-	//Controle e inicialização
+	//Controle e inicializacao
 	unsigned int numero_instancias;
 	bool ativa;
 	virtual void criar_entidades() = 0;
 
+	//Background
+	RectangleShape fundo;
+	Texture img_fundo;
+
+	//Tempo do Jogo
+	sf::Clock relogio_fase;
+	float tempo_fase;
+
+
 public:
-	Fase(Jogador *j);
+	Fase(Jogador *j1, Jogador* j2);
 	~Fase();
 
 	//Features
 	int gerarNumeroAleatorio(int min, int max);
 	int gerarNumeroAleatorio(float min, float max);
+	const float tempoFase();
 
-	//Controle da execução da fase
+	//Background
+	void setFundo(string path_fundo);
+	void setFundo(string path_fundo, IntRect rect);
+
+	//Controle da execuï¿½ï¿½o da fase
 	void verificaTerminoFase();
 	const bool getAtiva();
 
@@ -60,6 +76,5 @@ public:
 	virtual void criarCaixa() = 0;
 	virtual void criarPlataforma() = 0;
 	virtual void criarHydra() = 0;
-
 };
 

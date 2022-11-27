@@ -7,7 +7,7 @@
 GerenciadorGrafico* GerenciadorGrafico::pGrafico = nullptr;
 float GerenciadorGrafico::dt = 0;
 
-GerenciadorGrafico::GerenciadorGrafico():
+GerenciadorGrafico::GerenciadorGrafico(): estado(ID::menuPrincipal),
     window(new sf::RenderWindow(sf::VideoMode(RESOLUCAO_X, RESOLUCAO_Y), "Jogo")),
     clock()
 {
@@ -50,6 +50,17 @@ void GerenciadorGrafico::desenhar(sf::RectangleShape corpo)
     window->draw(corpo);
 }
 
+/*
+void GerenciadorGrafico::desenhar(sf::Sprite p)
+{
+    window->draw(p);
+}
+
+void GerenciadorGrafico::desenhar(sf::Text t)
+{
+    window->draw(t);
+}
+*/
 void GerenciadorGrafico::mostrar()
 {
     window->display();
@@ -65,10 +76,21 @@ const bool GerenciadorGrafico::isWindowOpen()
     return window->isOpen();
 }
 
+
 void GerenciadorGrafico::atualizaTempo()
 {
     dt = clock.getElapsedTime().asSeconds();
     clock.restart();
 
+}
+
+void GerenciadorGrafico::setEstado(const ID id)
+{
+    estado = id;
+}
+
+const ID GerenciadorGrafico::getEstado() const
+{
+    return estado;
 }
 

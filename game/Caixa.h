@@ -5,8 +5,8 @@ class Caixa : public Obstaculo
 {
 private:
 
-	//Define a propriedade da Caixa: Fixa ou móvel
-	bool fixa;
+	//Define a propriedade da Caixa: Fixa ou movel
+	bool ehFixa;
 
 public:
 	Caixa();

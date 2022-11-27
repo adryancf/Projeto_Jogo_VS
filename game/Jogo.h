@@ -2,7 +2,7 @@
 #include "Fase1.h"
 #include "Fase2.h"
 #include "GerenciadorEventos.h"
-#include "GerenciadorColisoes.h"
+#include "Menu.h"
 
 using namespace std;
 using namespace sf;
@@ -11,16 +11,17 @@ class Jogo: public Ente
 {
 private:
 	Jogador* Jogador1;
+	Jogador* Jogador2;
 
-	//Conhece a lista de entidades da fase para incluir no gerenciador de colisoes
-	ListaEntidades* lista_personagem;
-	ListaEntidades* lista_obstaculos;
-	
-	GerenciadorEvento* pEvento;
-	GerenciadorColisoes* pColisoes;
+	static GerenciadorEvento* pEvento;
 
 	Fase1* fase1;
 	Fase2* fase2;
+	Menu* menu;
+
+	//2: DOIS JOGADORES | 1: UM JOGADOR
+	int qJogadores;
+
 
 public:
 	Jogo();
@@ -33,8 +34,8 @@ public:
 	void iniciaFase2();
 	void deletaFase2();
 
+	void iniciarMenu();
+
 	void Executar();
-
-
 };
 

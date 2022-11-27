@@ -1,30 +1,52 @@
 #include "Jogo.h"
+#include "conio.h"
 
-Jogo::Jogo() : Ente(), pEvento(pEvento->getGerenciadorEvento()), fase2(nullptr)
+GerenciadorEvento * Jogo::pEvento = GerenciadorEvento::getGerenciadorEvento();
+
+
+Jogo::Jogo(): Ente(), 
+    fase2(nullptr), 
+    fase1(nullptr), 
+    qJogadores(0),
+    Jogador1(nullptr),
+    Jogador2(nullptr),
+    menu(nullptr)
 {
-
-    //Alocando ele dinamicâmente (O NEW É O EQUIVALENTE AO MALLOC EM C)
-   
-    iniciaFase1();
+    iniciarMenu();
     Executar();
 }
 
 Jogo::~Jogo()
 {
-    //Jogador vai ser deletado na destrutora da lista
+    if(menu)
+        delete menu;
 
+    menu = nullptr;
     Jogador1 = nullptr;
+    Jogador2 = nullptr;
 }
 
 
+void Jogo::iniciarMenu()
+{
+    std::cout << "Menu Principal iniciado." << std::endl;
+    menu = new Menu();
+}
 
 void Jogo::iniciaFase1()
 {
-    Jogador1 = new Jogador();
-    pEvento->setJogador(Jogador1);
+    Jogador1 = new Jogador(1);
 
-    fase1 = new Fase1(Jogador1);
+    //if(qJogadores == 2) (TIRAR COMENTARIOS COM O MENU DE OPCOES IMPLEMENTADO)
+        Jogador2 = new Jogador(2);
 
+    pEvento->setJogador1(Jogador1);
+    pEvento->setJogador2(Jogador2);
+
+    fase1 = new Fase1(Jogador1, Jogador2);
+
+
+    
 }
 
 
@@ -36,17 +58,52 @@ void Jogo::deletaFase1()
         cout << "IMPOSSIVEL DELETAR PONTEIRO NULO - FASE 1" << endl;
 
     fase1 = nullptr;
+    Jogador1 = nullptr;
+    Jogador2 = nullptr;
 }
 
 void Jogo::iniciaFase2()
 {
-    if(fase1)
-        deletaFase1();
+    //CAso ja exista Jogadores
+    if (Jogador1 && Jogador2) {
 
-    Jogador1 = new Jogador();
-    pEvento->setJogador(Jogador1);
+        Vector2<bool> jogadoresVivos;
+        jogadoresVivos.x = Jogador1->getVida();
+        jogadoresVivos.y = Jogador2->getVida();
 
-    fase2 = new Fase2(Jogador1);
+        if (fase1) {
+            cout << "TEMPO DE EXECUÃ‡ÃƒO FASE: " << fase1->tempoFase() << endl;
+            deletaFase1();
+        }
+
+        if (jogadoresVivos.x == true)
+            Jogador1 = new Jogador(1);
+
+        if (jogadoresVivos.y == true)
+            Jogador2 = new Jogador(2);
+    }
+
+    else {
+
+        if (fase1) {
+            cout << "TEMPO DE EXECUÃ‡ÃƒO FASE: " << fase1->tempoFase() << endl;
+            deletaFase1();
+        }
+
+        Jogador1 = new Jogador(1);
+
+        //if(qJogadores == 2) (TIRAR COMENTARIOS COM O MENU DE OPCOES IMPLEMENTADO)
+            Jogador2 = new Jogador(2);
+
+        //Zera os pontos
+        Jogador1->setPontos(0, 0);
+    }
+
+
+    pEvento->setJogador1(Jogador1);
+    pEvento->setJogador2(Jogador2);
+
+    fase2 = new Fase2(Jogador1, Jogador2);
 }
 
 void Jogo::deletaFase2()
@@ -58,11 +115,31 @@ void Jogo::deletaFase2()
 
     fase2 = nullptr;
     Jogador1 = nullptr;
+    Jogador2 = nullptr;
 }
+
+/*    FUNCIONAMENTO DA FASE
+*     Se hÃ¡ jogador vivo a fase continua.
+*     Se a fase1 ja estiver acabada ou nao esta em execucao, a fase2 eh executada.
+*     Quando instancia a fase2, se a fase1 existir ela eh deletada
+*     Quando acabada a fase2 ela eh deletada
+*     Quando os dois jogadores morrem, as duas fases se deletam
+*/
 
 void Jogo::controleFases()
 {
-    if (Jogador1 && Jogador1->getVida() == true) {
+
+    if (!fase1 && pGrafico->getEstado() == ID::fase1) {
+        iniciaFase1();
+        cout << "CRIEI FASE 1" << endl;
+    }
+    
+    else if (!fase2 && pGrafico->getEstado() == ID::fase2) {
+        iniciaFase2();
+        cout << "CRIEI FASE 2" << endl;
+    }
+
+    else if (Jogador1 && Jogador1->getVida() == true || Jogador2 && Jogador2->getVida() == true) {
 
         if (fase1 && fase1->getAtiva())
         {
@@ -72,20 +149,32 @@ void Jogo::controleFases()
 
         else
         {
-            if (fase2 == nullptr)
-                iniciaFase2();
+            pGrafico->setEstado(ID::fase2);
 
-            //cout << "Chamei a fase2" << endl;
+            if (fase2)
+            {
+                if (fase2->getAtiva())
+                {
+                    fase2->Executar();
+                    fase2->verificaTerminoFase();
 
-            if (fase2->getAtiva()) {
-                fase2->Executar();
-                fase2->verificaTerminoFase();
-            }
-            else {
-                deletaFase2();
+                }
+                else if (!fase2->getAtiva())
+                {
+                    cout << "GANHOOO JOGO! " << endl;
+
+                    //Caso a fase termine, volta ao menu principal
+                    pGrafico->setEstado(ID::menuPrincipal);
+                    deletaFase2();
+
+                    //PRECISA DEFINIR DE NOVO QUANTOS JOGADORES O USUARIO QUER CONTROLAR
+                    qJogadores = 0;
+
+                }
             }
         }
     }
+
     else {
 
         if (fase1)
@@ -93,29 +182,57 @@ void Jogo::controleFases()
         if (fase2)
             deletaFase2();
 
-        //deletar
-        cout << "FIM DO JOGO!" << endl; //tela de gameOver
-        //tempo e uma imagem
-        pGrafico->fecharJanela();
+        //Tela de gameOver
+        cout << "FIM DO JOGO!" << endl; 
+
+        //Tempo e uma imagem
+        pGrafico->setEstado(ID::menuPrincipal);
+
+        //PRECISA DEFINIR DE NOVO QUANTOS JOGADORES O USUARIO QUER CONTROLAR
+        qJogadores = 0;
     }
 }
+
 
 void Jogo::Executar()
 {
     
-    //LOOP DE EXECUÇÃO DO PROGRAMA
+    //LOOP DE EXECUCAO DO PROGRAMA
     while (pGrafico->isWindowOpen())
     {
-        pEvento->Executar();
+        ID estado = pGrafico->getEstado();
+        
+        if (estado == ID::menuPrincipal)
+        {
+            menu->run_menu();
+        }
+        else if (estado == ID::menuPause)
+        {
 
-        pGrafico->atualizaTempo();
+        }
 
-        pGrafico->limpar();
-  
-        //Desenho as entidades da fase na tela e gerencio as colisoes entre elas dentro de cada fase
-        controleFases();
+        else if (estado == ID::menuQuantidadeJogadores)
+        {
+            //qJogadores = menu->run_menu_escolha (retorna um int de escolha)
 
-        pGrafico->mostrar();
+        }
+
+        else if (estado == ID::fase1 || estado == ID::fase2)
+        {
+
+            //if (qJogadores == 0)
+                //pGrafico->setEstado(ID::menuQuantidadeJogadores);
+
+            //else {
+                pEvento->Executar();
+                pGrafico->atualizaTempo();
+                pGrafico->limpar();
+
+                controleFases();
+
+                pGrafico->mostrar();
+            //}
+        }
                
     }
 

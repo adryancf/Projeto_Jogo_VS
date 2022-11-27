@@ -1,25 +1,21 @@
 #include "Entidade.h"
 
-Entidade::Entidade(ID idd) : corpo(Vector2f(70.f, 70.f)),
+
+Entidade::Entidade(ID idd): corpo(Vector2f(70.f, 70.f)),
     Ente(),
-    visivel(true),
     colisaoPlataforma(false),
     gravidade(true), 
     noChao(false), 
-    emCima(false),
+    emCimaEntidade(false),
     speed(Vector2f(0.0f, 0.0f)),
-    repulsao(Vector2f(0.0f, 0.0f)),
-    dano(0.0f),
-    id(idd)
-{}
+    repulsao_direita(Vector2f(0.0f, 0.0f)),
+    repulsao_esquerda(Vector2f(0.0f, 0.0f)),
+    dano(0.0f)
+{  
+}
 
 
 Entidade::~Entidade(){}
-
-ID Entidade::getId() const
-{
-    return id;
-}
 
 void Entidade::render()
 {
@@ -40,19 +36,24 @@ const bool Entidade::verificarPosInvalida()
 
 }
 
+const bool Entidade::verificarPosInvalidaEmY()
+{
+    Vector2f pos_ent(getPosicao());
+
+    if (pos_ent.y > RESOLUCAO_Y + getSizeCorpo().y)
+        return true;
+    else
+        return false;
+}
+
 void Entidade::setVelocidade(Vector2f velocidade)
 {
     speed = velocidade;
 }
 
-Vector2f Entidade::getVelocidade()
+const Vector2f Entidade::getVelocidade() const
 {
     return speed;
-}
-
-const Vector2f Entidade::getRepulsao()
-{
-    return repulsao;
 }
 
 void Entidade::setDano(float dano)
@@ -63,11 +64,6 @@ void Entidade::setDano(float dano)
 const float Entidade::getDano() const
 {
     return dano;
-}
-
-const bool Entidade::getVisivel() const
-{
-    return visivel;
 }
 
 const RectangleShape Entidade::getCorpo() const
@@ -101,10 +97,10 @@ void Entidade::setChao(bool estaNoChao)
     noChao = estaNoChao;
 }
 
-
+//retorna um booleano que define se esta emCima ou nao: true ou false
 const bool Entidade::getEmCima()
 {
-    return emCima;
+    return emCimaEntidade;
 }
 
 void Entidade::movGravidade()
@@ -116,7 +112,7 @@ void Entidade::movGravidade()
 
     else{ noChao = false; }
         
-    //Manipulação da integração de Euler = (Velocidade + posicao atual) + acelaracao
+    //Manipulacao da integracao de Euler = (Velocidade + posicao atual) + aceleracao
     //(Velocidade + posicao atual) = corpo.move -> ele soma a posicao atual mais o valor da velocidade
     
     if (gravidade) {
@@ -126,15 +122,7 @@ void Entidade::movGravidade()
         speed.y += acelaracao * GerenciadorGrafico::dt;
 
         corpo.move(Vector2f(0.0f, speed.y));
-
-        /*
-        //tempo eleavdo a 1 (Gravidade = 9.98)
-        double acelaracao = GRAVIDADE * GerenciadorGrafico::dt;
-        speed.y += acelaracao;
-        */
-
     }
-
 }
 
 
@@ -147,7 +135,7 @@ void Entidade::corrigeColisoes(Entidade* a, Vector2f inter)
     Vector2f entidadeEmColisao = a->getPosicao();
     
     //So vai ser true se a natureza da colisao for de cima para baixo 
-    emCima = false;
+    emCimaEntidade = false;
 
     //Colisao em x
     if (inter.x >= inter.y) {
@@ -172,9 +160,9 @@ void Entidade::corrigeColisoes(Entidade* a, Vector2f inter)
 
             corpo.move(Vector2f(0.f, inter.y));
 
-            //Se a entidade colidida nao for uma plataforma, quer dizer que o objeto que chamou essa funcao esta em cima de outra entidade
-            if (a->getId() != ID::plataforma) {
-                emCima = true;
+            //SÃ³ importa se estou em cima de alguma entidade
+            if (a->getId() != ID::plataforma || a->getId() != ID::caixa || a->getId() != ID::espinho) {
+                emCimaEntidade = true;
             }
         }
 
@@ -187,7 +175,25 @@ void Entidade::corrigeColisoes(Entidade* a, Vector2f inter)
 
 }
 
+//sem IntRect, seta a textura do corpo, usa try-catch se nao conseguir carregar a textura
+void Entidade::setTextura(std::string str)
+{
+    try
+    {
+        bool v = texture.loadFromFile(str);
+        if (v)
+            cout << "textura carregada com sucesso." << endl;
+        else
+            throw false;
+    }
+    catch (bool s)
+    {
+        cout << "impossivel carregar a textura" << endl;
+        exit(1);
+    }
+}
 
+//define a posicao da entidade
 void Entidade::setPosEntidade(Vector2f pos)
 {
     corpo.setPosition(pos);

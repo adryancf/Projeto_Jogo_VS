@@ -2,6 +2,8 @@
 
 #include "Personagens.h"
 
+//Adicionar SPRITE NO PROJETIL
+
 class Projetil: public Entidade
 {
 private:

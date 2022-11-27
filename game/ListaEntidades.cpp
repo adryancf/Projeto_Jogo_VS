@@ -16,7 +16,7 @@ void ListaEntidades::renderElementos()
 	{
 		Entidade* aux = listEnt[j];
 		
-		if (aux->getVisivel()) {
+		if (aux && aux->getVisivel()) {
 			aux->Executar();
 			aux->render();
 		}
@@ -31,7 +31,7 @@ bool ListaEntidades::verificaEntidadesVisiveis()
 	//Percorrer a lista e contar quantas entidades estao com a flag visivel como false
 	for (int i = 0; i < getTamanhoLista(); i++){
 	
-		if (listEnt[i]->getId() == ID::anjo || listEnt[i]->getId() == ID::dragao || listEnt[i]->getId() == ID::hydra) {
+		if (listEnt[i]->getId() == ID::anjo || listEnt[i]->getId() == ID::fantasma || listEnt[i]->getId() == ID::hydra) {
 			if (listEnt[i]->getVisivel() == true)
 				return true;
 		}
@@ -40,6 +40,21 @@ bool ListaEntidades::verificaEntidadesVisiveis()
 	return false;
 
 
+}
+
+int ListaEntidades::contaEntidadesMortas()
+{
+	int entidades = 0;
+	//Percorrer a lista e contar quantas entidades estao com a flag visivel como false
+	for (int i = 0; i < getTamanhoLista(); i++) {
+
+		if (listEnt[i]->getId() == ID::anjo || listEnt[i]->getId() == ID::fantasma || listEnt[i]->getId() == ID::hydra) {
+			if (listEnt[i]->getVisivel() == false)
+				entidades++;
+		}
+	}
+
+	return entidades;
 }
 
 Entidade* ListaEntidades::getJogador()
@@ -62,7 +77,7 @@ void ListaEntidades::incluir(Entidade* pE)
 {
 	if (pE == nullptr)
 	{
-		cout << "Ponteiro pE é o nullptr. Checar ListaEntidades::push" << endl;
+		cout << "Ponteiro pE ï¿½ o nullptr. Checar ListaEntidades::push" << endl;
 		exit(1);
 	}
 
@@ -73,7 +88,7 @@ void ListaEntidades::remover(Entidade* pE)
 {
 	if (pE == nullptr)
 	{
-		std::cout << "Imposível remover nullptr. Checar ListaEntidades::pop." << std::endl;
+		std::cout << "Imposï¿½vel remover nullptr. Checar ListaEntidades::pop." << std::endl;
 		exit(1);
 	}
 	listEnt.pop(pE);

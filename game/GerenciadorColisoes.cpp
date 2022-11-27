@@ -45,24 +45,27 @@ void GerenciadorColisoes::verificaColisoes()
 void GerenciadorColisoes::colisaoPersonagens()
 {
 	//COLISAO ENTRE PERSONAGEM E JOGADOR (FAZER ISSO)
-	Entidade* Jogador1 = nullptr;
+	Entidade* Jogador = nullptr;
+	
 	Entidade* aux = nullptr;
 	Vector2f Colisao;
 
-	Jogador1 = lista_personagens->getJogador();
+	
+	for (int i = 0; i < 2; i++) {
+		Jogador = lista_personagens->operator[](i);
 
-	//Verifica se houve colisão
-	for (int j = 1; j < lista_personagens->getTamanhoLista(); j++) {
+		//Verifica se houve colisï¿½o (NAO TEM PROBLEMA SE OS JOGADORES SE COLIDIREM)
+		for (int j = i+1; j < lista_personagens->getTamanhoLista(); j++) {
 
-		aux = lista_personagens->operator[](j);
+			aux = lista_personagens->operator[](j);
 
-		Colisao = calculaColisoes(Jogador1, aux);
-		if (Colisao.x < 0.0f && Colisao.y < 0.0f) {
-			Jogador1->Colisao(aux, Colisao);
-			aux->Colisao(Jogador1, Colisao);
+			Colisao = calculaColisoes(Jogador, aux);
+			if (Colisao.x < 0.0f && Colisao.y < 0.0f) {
+				Jogador->Colisao(aux, Colisao);
+				aux->Colisao(Jogador, Colisao);
+			}
 		}
 	}
-
 
 }
 
@@ -76,7 +79,7 @@ void GerenciadorColisoes::colisaoPersonagemObstaculos()
 	vector <pair<Entidade*, Entidade*>> vector_colisoes;
 	vector <Vector2f> valor_colisao;
 
-	//Verifico a colisão entre os personagens e os obstaculos
+	//Verifico a colisï¿½o entre os personagens e os obstaculos
 	for (unsigned int i = 0; i < lista_personagens->getTamanhoLista(); i++)
 	{
 		aux1 = lista_personagens->operator[](i);
@@ -120,7 +123,7 @@ void GerenciadorColisoes::colisaoObstaculos()
 
 		aux1 = lista_obstaculos->operator[](i);
 
-		//Verifica se houve colisão
+		//Verifica se houve colisï¿½o
 		for (int j = i+1; j < lista_obstaculos->getTamanhoLista(); j++) {
 
 			aux2 = lista_obstaculos->operator[](j);

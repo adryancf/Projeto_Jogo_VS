@@ -22,7 +22,5 @@ public:
 
 	void setItem(TIPO* i) { this->item = i; }
 	TIPO* getItem() { return item; }
-
-
 };
 

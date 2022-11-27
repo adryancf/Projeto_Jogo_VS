@@ -2,6 +2,7 @@
 
 #include "Obstaculo.h"
 #include "Personagens.h"
+#include "stdafx.h"
 
 class Espinho : public Obstaculo
 {
@@ -20,6 +21,5 @@ public:
 	virtual void Executar();
 	virtual void atacar(Entidade* adversario, float dano);
 	virtual void Colisao(Entidade* entidade, Vector2f inter_colisao);
-
 };
 

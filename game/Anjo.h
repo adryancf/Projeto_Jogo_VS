@@ -15,11 +15,10 @@ private:
 	float tempo_atk;
 
 	//Controle
-	bool estaNoRaio;
 	string direcao_alvo;
 
 public:
-	Anjo(Jogador* p, Projetil* b);
+	Anjo(Jogador* p1, Jogador* p2, Projetil* b);
 	~Anjo();
 
 	void setAlvo(Personagens* alvo);
@@ -28,14 +27,12 @@ public:
 
 
 	const Projetil* getProjetil();
-	virtual void atacar();
+	virtual void atirar_projetil();
 
-	void inicializa();
+	void inicializaVariaveis();
 
 	virtual void Mover();
 	virtual void Executar();
 	virtual void Colisao(Entidade* entidade, Vector2f inter_colisao);
-
-
 };
 

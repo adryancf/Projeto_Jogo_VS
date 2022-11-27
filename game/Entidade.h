@@ -1,23 +1,6 @@
 #pragma once
 #include "Ente.h"
 
-//Fazer uma classe ID
-enum ID
-{
-	eempty = 0,
-	jogador,
-	hydra,
-	anjo,
-	dragao,
-	caixa,
-	espinho,
-	plataforma,
-	inimigo,
-	obstaculo,
-	projetil
-};
-
-
 //derivando como virtual public
 class Entidade : virtual public Ente
 {
@@ -25,30 +8,32 @@ protected:
 	//Toda entidade tem um shape
 	RectangleShape corpo;
  
+	//Textura
+	sf::Texture texture;
+
 	//Toda entidade sofre uma velocida (gravidade e movimento)
 	sf::Vector2f speed;
 
-	//Nao sei se seria util esse atributo (pois a posicao do corpo pode ser obtida atraves de um getPosicao())
 	Vector2f posicao;
 
 	//Util para colisoes entre entidades
-	sf::Vector2f repulsao;
+	sf::Vector2f repulsao_direita;
+	sf::Vector2f repulsao_esquerda;
 
 	//Entidades sao capazes de causar dano
 	float dano;
 
-	ID id;
 
 	//Variaveis de controle
-	bool visivel;
+	
 	bool colisaoPlataforma;
 	bool gravidade;
 	bool noChao;
-	bool emCima;
+	bool emCimaEntidade;
 
 public:
 
-	Entidade(ID idd = eempty);
+	Entidade(ID idd = ID::vazio);
 	~Entidade();
 
 	//Controle
@@ -56,15 +41,15 @@ public:
 
 	//Funcao para verificar se a entidade esta dentro da area permitida na tela
 	const bool verificarPosInvalida();
+	const bool verificarPosInvalidaEmY();
+
 
 
 	//ATRIBUTOS
 	void setVelocidade(Vector2f velocidade);
-	Vector2f getVelocidade();
-	const Vector2f getRepulsao();
+	const Vector2f getVelocidade() const;
 	void setDano(float dano);
 	const float getDano() const;
-	const bool getVisivel() const;
 
 	//Entidades sao capazes de causar dano em outras entidades
 	virtual void atacar(Entidade* adversario, float dano) = 0;
@@ -78,9 +63,6 @@ public:
 	const Vector2f getPosicao() const;
 	
 
-	//retorna o ID
-	ID getId() const;
-
 	//COLISAO E GRAVIDADE
 	void setColisaoPlataforma(bool estaNaPlataforma);
 	void setChao(bool estaNoChao);
@@ -91,6 +73,8 @@ public:
 	
 	virtual void Executar() = 0;
 	virtual void Colisao(Entidade* entidade, Vector2f inter_colisao) = 0;
+
+	void setTextura(std::string str);
 
 };
 

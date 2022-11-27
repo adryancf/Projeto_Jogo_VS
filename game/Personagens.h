@@ -19,6 +19,7 @@ protected:
     bool olhandoEsquerda;
     bool podeAndar;
     bool podePular;
+    bool andando;
 
     //Controle da repulsao do dragao
     string direcaoMovimento;
@@ -41,19 +42,23 @@ public:
     void perdeVida(float dano); //Perde a vida com base no dano recebido
 
     //MOVIMENTO E PULO
+
     void movimentaEntidade(Vector2f mov, bool direcao); // Ja altera as flags de olhar
     void setDirecaoMovimento(string direcao);
-    const Vector2<bool> getOlhar(); // Sabemos para aonde a entidade ta olhando
+    const bool getOlhar(); // Sabemos para aonde a entidade ta olhando
     void verificaPodeAndar(Vector2f pos);
     const Vector2<bool> getPodeAndar();
+    const bool getPodeAndarDireita();
+    const bool getPodeAndarEsquerda();
     void pular(double tam_pulo);
-   
-    //FUN��ES PRINCIPAIS
+    void setAndando(bool estado_do_jogador); //Indica se o personagem esta andando ou nao
+    const bool getEstadoMovimentoJogador(); // Retorna se esta parado ou andando
+
+    //FUNCOES PRINCIPAIS
     virtual void Executar() = 0;
     virtual void Mover() = 0;
     virtual void Colisao(Entidade* entidade, Vector2f inter_colisao) = 0;
 
-    //Cada personagem atualiza a vida a sua maneira, neste momento comentada pq tem que alterar a classe toda
-    //virtual void atualizarVida() = 0;
+    
 };
 
